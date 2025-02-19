@@ -6,7 +6,8 @@ public struct KAScrollViewWithTextViewFooter<
     ScrollContent: View,
     BottomContent: View,
     Background: View,
-    ScrollViewResult: View
+    ScrollViewResult: View,
+    ScrollViewOverlay: View
 >: View {
     let placeholder: String
     @Binding var text: String
@@ -17,6 +18,7 @@ public struct KAScrollViewWithTextViewFooter<
     let footer: (KATextView) -> BottomContent
     let footerBackground: () -> Background
     let scrollViewCustomizer: (KAScrollView<ScrollContent>) -> ScrollViewResult
+    let scrollViewOverlay: () -> ScrollViewOverlay
     
     /// Initializes a new `KAScrollViewWithTextViewFooter`.
     /// - Parameters:
@@ -26,7 +28,8 @@ public struct KAScrollViewWithTextViewFooter<
     ///   - scrollContent: The scroll content that covers most of the screen.
     ///   - footer: The footer of the view. Includes a `KATextView` instance that represents the resizable text view.
     ///   - footerBackground: The background for the Footer. Blur view with system Material by default.
-    ///   - scrollViewCustomizer: An optional block to customize the scroll view with methods like `scrollPosition`. You can also not use the scroll view at all in certain scenarios, for example when no messages have been sent yet in a chat app.
+    ///   - scrollViewCustomizer: An optional block to customize the scroll view with methods like `scrollPosition`. The given scrollview has to be a part of the result of this block.
+    ///   - scrollViewOverlay: The view overlayed on top of the scroll view, for example when no messages have been sent yet in a chat app.
     public init(
         placeholder: String,
         text: Binding<String>,
@@ -36,7 +39,8 @@ public struct KAScrollViewWithTextViewFooter<
         @ViewBuilder footerBackground: @escaping () -> Background = {
             Blur(.systemMaterial)
         },
-        @ViewBuilder scrollViewCustomizer: @escaping (KAScrollView<ScrollContent>) -> ScrollViewResult
+        @ViewBuilder scrollViewCustomizer: @escaping (KAScrollView<ScrollContent>) -> ScrollViewResult,
+        @ViewBuilder scrollViewOverlay: @escaping () -> ScrollViewOverlay = { EmptyView() }
     ) {
         self.placeholder = placeholder
         self._text = text
@@ -45,6 +49,7 @@ public struct KAScrollViewWithTextViewFooter<
         self.footer = footer
         self.footerBackground = footerBackground
         self.scrollViewCustomizer = scrollViewCustomizer
+        self.scrollViewOverlay = scrollViewOverlay
     }
     
     /// Initializes a new `KAScrollViewWithTextViewFooter`.
@@ -55,6 +60,7 @@ public struct KAScrollViewWithTextViewFooter<
     ///   - scrollContent: The scroll content that covers most of the screen.
     ///   - footer: The footer of the view. Includes a `KATextView` instance that represents the resizable text view.
     ///   - footerBackground: The background for the Footer. Blur view with system Material by default.
+    ///   - scrollViewOverlay: The view overlayed on top of the scroll view, for example when no messages have been sent yet in a chat app.
     public init(
         placeholder: String,
         text: Binding<String>,
@@ -63,7 +69,8 @@ public struct KAScrollViewWithTextViewFooter<
         @ViewBuilder footer: @escaping (KATextView) -> BottomContent,
         @ViewBuilder footerBackground: @escaping () -> Background = {
             Blur(.systemMaterial)
-        }
+        },
+        @ViewBuilder scrollViewOverlay: @escaping () -> ScrollViewOverlay = { EmptyView() }
     ) where ScrollViewResult == KAScrollView<ScrollContent> {
         self.placeholder = placeholder
         self._text = text
@@ -72,6 +79,7 @@ public struct KAScrollViewWithTextViewFooter<
         self.footer = footer
         self.footerBackground = footerBackground
         self.scrollViewCustomizer = { $0 }
+        self.scrollViewOverlay = scrollViewOverlay
     }
     
     public var body: some View {
@@ -82,7 +90,8 @@ public struct KAScrollViewWithTextViewFooter<
             scrollContent: scrollContent,
             footer: footer,
             footerBackground: footerBackground,
-            scrollViewCustomizer: scrollViewCustomizer
+            scrollViewCustomizer: scrollViewCustomizer,
+            scrollViewOverlay: scrollViewOverlay
         )
         .ignoresSafeArea()
     }

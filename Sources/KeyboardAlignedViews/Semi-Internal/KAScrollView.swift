@@ -17,3 +17,12 @@ public struct KAScrollView<ScrollContent: View>: View {
         .scrollClipDisabled()
     }
 }
+
+public struct OverlayView<Overlay: View>: View {
+    let model: ScrollViewHolderModel
+    let overlay: () -> Overlay
+    
+    public var body: some View {
+        overlay().padding(.bottom, model.height)
+    }
+}

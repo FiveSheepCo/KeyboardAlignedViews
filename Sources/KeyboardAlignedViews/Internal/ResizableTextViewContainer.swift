@@ -6,7 +6,8 @@ struct ResizableTextViewContainer<
     ScrollContent: View,
     BottomContent: View,
     Background: View,
-    ScrollViewResult: View
+    ScrollViewResult: View,
+    ScrollViewOverlay: View
 >: UIViewControllerRepresentable {
     let placeholder: String
     @Binding var text: String
@@ -15,6 +16,7 @@ struct ResizableTextViewContainer<
     let bottomContent: (KATextView) -> BottomContent
     let background: () -> Background
     let scrollViewCustomizer: (KAScrollView<ScrollContent>) -> ScrollViewResult
+    let scrollViewOverlay: () -> ScrollViewOverlay
     
     @State var scrollViewModel: ScrollViewHolderModel = ScrollViewHolderModel()
     
@@ -25,7 +27,8 @@ struct ResizableTextViewContainer<
         @ViewBuilder scrollContent: @escaping () -> ScrollContent,
         @ViewBuilder footer: @escaping (KATextView) -> BottomContent,
         @ViewBuilder footerBackground: @escaping () -> Background,
-        @ViewBuilder scrollViewCustomizer: @escaping (KAScrollView<ScrollContent>) -> ScrollViewResult
+        @ViewBuilder scrollViewCustomizer: @escaping (KAScrollView<ScrollContent>) -> ScrollViewResult,
+        @ViewBuilder scrollViewOverlay: @escaping () -> ScrollViewOverlay
     ) {
         self.placeholder = placeholder
         self._text = text
@@ -34,16 +37,23 @@ struct ResizableTextViewContainer<
         self.bottomContent = footer
         self.background = footerBackground
         self.scrollViewCustomizer = scrollViewCustomizer
+        self.scrollViewOverlay = scrollViewOverlay
     }
 
     func makeUIViewController(context: Context) -> UIViewController {
         let viewController = UIViewController()
-
+        
         // Custom SwiftUI Content View in ScrollView
         let scrollHostingController = UIHostingController(
             rootView: scrollViewCustomizer(
-                KAScrollView(model: scrollViewModel, scrollContent: scrollContent)
+                KAScrollView(
+                    model: scrollViewModel,
+                    scrollContent: scrollContent
+                )
             )
+            .overlay {
+                OverlayView(model: scrollViewModel, overlay: scrollViewOverlay)
+            }
         )
         scrollHostingController.view.translatesAutoresizingMaskIntoConstraints = false
         let scrollHostingView = scrollHostingController.view!
@@ -170,10 +180,7 @@ struct ResizableTextViewContainer<
             }
             
             MainActor.assumeIsolated {
-                guard let scrollView else {
-                    assertionFailure()
-                    return
-                }
+                guard let scrollView else { return }
                 
                 // Scroll up when the keyboard shows
                 let keyboardStartY = min(lastRecordedKeyboardMinY, startFrame.minY, scrollViewMaxY)
