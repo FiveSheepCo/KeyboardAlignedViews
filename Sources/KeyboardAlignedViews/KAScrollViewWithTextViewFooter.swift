@@ -10,6 +10,9 @@ public struct KAScrollViewWithTextViewFooter<
 >: View {
     let placeholder: String
     @Binding var text: String
+    let externalEditingBinding: Binding<Bool>?
+    @State var isEditing: Bool = false
+    
     let scrollContent: () -> ScrollContent
     let footer: (KATextView) -> BottomContent
     let footerBackground: () -> Background
@@ -19,13 +22,15 @@ public struct KAScrollViewWithTextViewFooter<
     /// - Parameters:
     ///   - placeholder: The placeholder the text field shows before content is entered.
     ///   - text: The text the text field contains.
+    ///   - isEditing: Binding to the editing state of the text view.
     ///   - scrollContent: The scroll content that covers most of the screen.
     ///   - footer: The footer of the view. Includes a `KATextView` instance that represents the resizable text view.
     ///   - footerBackground: The background for the Footer. Blur view with system Material by default.
-    ///   - scrollViewCustomizer: An optional block to customize the scroll view with methods like `scrollPosition`.
+    ///   - scrollViewCustomizer: An optional block to customize the scroll view with methods like `scrollPosition`. You can also not use the scroll view at all in certain scenarios, for example when no messages have been sent yet in a chat app.
     public init(
         placeholder: String,
         text: Binding<String>,
+        isEditing: Binding<Bool>? = nil,
         @ViewBuilder scrollContent: @escaping () -> ScrollContent,
         @ViewBuilder footer: @escaping (KATextView) -> BottomContent,
         @ViewBuilder footerBackground: @escaping () -> Background = {
@@ -35,6 +40,7 @@ public struct KAScrollViewWithTextViewFooter<
     ) {
         self.placeholder = placeholder
         self._text = text
+        self.externalEditingBinding = isEditing
         self.scrollContent = scrollContent
         self.footer = footer
         self.footerBackground = footerBackground
@@ -45,12 +51,14 @@ public struct KAScrollViewWithTextViewFooter<
     /// - Parameters:
     ///   - placeholder: The placeholder the text field shows before content is entered.
     ///   - text: The text the text field contains.
+    ///   - isEditing: Binding to the editing state of the text view.
     ///   - scrollContent: The scroll content that covers most of the screen.
     ///   - footer: The footer of the view. Includes a `KATextView` instance that represents the resizable text view.
     ///   - footerBackground: The background for the Footer. Blur view with system Material by default.
     public init(
         placeholder: String,
         text: Binding<String>,
+        isEditing: Binding<Bool>? = nil,
         @ViewBuilder scrollContent: @escaping () -> ScrollContent,
         @ViewBuilder footer: @escaping (KATextView) -> BottomContent,
         @ViewBuilder footerBackground: @escaping () -> Background = {
@@ -59,6 +67,7 @@ public struct KAScrollViewWithTextViewFooter<
     ) where ScrollViewResult == KAScrollView<ScrollContent> {
         self.placeholder = placeholder
         self._text = text
+        self.externalEditingBinding = isEditing
         self.scrollContent = scrollContent
         self.footer = footer
         self.footerBackground = footerBackground
@@ -69,6 +78,7 @@ public struct KAScrollViewWithTextViewFooter<
         ResizableTextViewContainer(
             placeholder: placeholder,
             text: $text,
+            isEditing: externalEditingBinding ?? $isEditing,
             scrollContent: scrollContent,
             footer: footer,
             footerBackground: footerBackground,

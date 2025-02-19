@@ -7,6 +7,7 @@ public struct KAScrollView<ScrollContent: View>: View {
     public var body: some View {
         ScrollView {
             scrollContent()
+                .contentShape(Rectangle())
             Rectangle()
                 .fill(Color.clear)
                 .frame(height: model.scrollPushUpAdjustment)

@@ -7,6 +7,7 @@ struct TextViewRepresentable: UIViewRepresentable {
     
     @Binding var height: CGFloat
     @Binding var text: String
+    @Binding var isEditing: Bool
     let inputAccessoryView: UIView
     
     func makeUIView(context: Context) -> UITextView {
@@ -33,6 +34,15 @@ struct TextViewRepresentable: UIViewRepresentable {
         
         // Delegate height adjustment to the coordinator
         context.coordinator.adjustHeight(of: uiView)
+        
+        // Adjust editing state
+        if isEditing != uiView.isFirstResponder {
+            if isEditing {
+                uiView.becomeFirstResponder()
+            } else {
+                uiView.resignFirstResponder()
+            }
+        }
     }
 
     func makeCoordinator() -> Coordinator {
@@ -46,7 +56,7 @@ struct TextViewRepresentable: UIViewRepresentable {
         init(_ parent: TextViewRepresentable) {
             self.parent = parent
         }
-
+        
         func adjustHeight(of textView: UITextView) {
             // Calculate the required height for the content
             let fittingSize = textView.sizeThatFits(CGSize(width: textView.frame.width, height: CGFloat.greatestFiniteMagnitude))
@@ -67,9 +77,23 @@ struct TextViewRepresentable: UIViewRepresentable {
             // Enable or disable scrolling based on content size
             textView.isScrollEnabled = fittingSize.height > Constants.maxHeight
         }
-
+        
         func textViewDidChange(_ textView: UITextView) {
             parent.text = textView.text
+        }
+        
+        // MARK: Editing State
+        
+        func textViewDidBeginEditing(_ textView: UITextView) {
+            Task {
+                parent.isEditing = true
+            }
+        }
+        
+        func textViewDidEndEditing(_ textView: UITextView) {
+            Task {
+                parent.isEditing = false
+            }
         }
     }
 }

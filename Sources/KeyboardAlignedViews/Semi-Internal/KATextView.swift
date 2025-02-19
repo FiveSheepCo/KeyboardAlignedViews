@@ -4,6 +4,7 @@ import SwiftUI
 public struct KATextView: View {
     let placeholder: String
     @Binding var text: String
+    @Binding var isEditing: Bool
     let inputAccessoryView: UIView
     
     @State private var height: CGFloat = 0
@@ -12,6 +13,7 @@ public struct KATextView: View {
         TextViewRepresentable(
             height: $height,
             text: $text,
+            isEditing: $isEditing,
             inputAccessoryView: inputAccessoryView
         )
         .frame(height: height)

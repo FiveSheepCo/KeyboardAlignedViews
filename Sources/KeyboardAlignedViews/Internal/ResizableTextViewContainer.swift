@@ -10,6 +10,7 @@ struct ResizableTextViewContainer<
 >: UIViewControllerRepresentable {
     let placeholder: String
     @Binding var text: String
+    @Binding var isEditing: Bool
     let scrollContent: () -> ScrollContent
     let bottomContent: (KATextView) -> BottomContent
     let background: () -> Background
@@ -20,6 +21,7 @@ struct ResizableTextViewContainer<
     init(
         placeholder: String,
         text: Binding<String>,
+        isEditing: Binding<Bool>,
         @ViewBuilder scrollContent: @escaping () -> ScrollContent,
         @ViewBuilder footer: @escaping (KATextView) -> BottomContent,
         @ViewBuilder footerBackground: @escaping () -> Background,
@@ -27,6 +29,7 @@ struct ResizableTextViewContainer<
     ) {
         self.placeholder = placeholder
         self._text = text
+        self._isEditing = isEditing
         self.scrollContent = scrollContent
         self.bottomContent = footer
         self.background = footerBackground
@@ -64,7 +67,12 @@ struct ResizableTextViewContainer<
         var bottomLayoutConstraint: NSLayoutConstraint!
         let bottomHostingController = UIHostingController(
             rootView: bottomContent(
-                KATextView(placeholder: placeholder, text: $text, inputAccessoryView: accessoryView)
+                KATextView(
+                    placeholder: placeholder,
+                    text: $text,
+                    isEditing: $isEditing,
+                    inputAccessoryView: accessoryView
+                )
             )
             .sizeReader(onSizeChange: { newSize in
                 let old = scrollViewModel.height
@@ -197,7 +205,7 @@ struct ResizableTextViewContainer<
             
             let bottomInset = scrollViewContainer.view.safeAreaInsets.bottom - scrollViewContainer.additionalSafeAreaInsets.bottom
             
-            return scrollViewContainer.view.frame.maxY - bottomInset
+            return (scrollViewContainer.view.windowMinY + scrollViewContainer.view.frame.maxY) - bottomInset
         }
         
         func update(oldHeight: CGFloat) {
