@@ -17,13 +17,16 @@ struct TextViewRepresentable: UIViewRepresentable {
         textView.isScrollEnabled = false
         textView.font = UIFont.preferredFont(forTextStyle: .body)
         textView.backgroundColor = .clear
-        textView.translatesAutoresizingMaskIntoConstraints = false
         textView.delegate = context.coordinator
         
         // Remove all padding
         textView.textContainerInset = .zero
         textView.contentInset = .zero
         textView.textContainer.lineFragmentPadding = 0
+        
+        // Disable autoresizing mask to use Auto Layout constraints
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        textView.setContentCompressionResistancePriority(.fittingSizeLevel, for: .horizontal)
         
         return textView
     }
@@ -59,7 +62,12 @@ struct TextViewRepresentable: UIViewRepresentable {
         
         func adjustHeight(of textView: UITextView) {
             // Calculate the required height for the content
-            let fittingSize = textView.sizeThatFits(CGSize(width: textView.frame.width, height: CGFloat.greatestFiniteMagnitude))
+            let fittingSize = textView.sizeThatFits(
+                CGSize(
+                    width: textView.frame.width,
+                    height: CGFloat.greatestFiniteMagnitude
+                )
+            )
             let height = min(fittingSize.height, Constants.maxHeight)
             
             // Update or create the height constraint
