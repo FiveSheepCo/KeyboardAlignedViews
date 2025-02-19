@@ -56,13 +56,13 @@ public struct KAScrollViewWithTextViewFooter<
         @ViewBuilder footerBackground: @escaping () -> Background = {
             Blur(.systemMaterial)
         }
-    ) where ScrollViewResult == AnyView {
+    ) where ScrollViewResult == KAScrollView<ScrollContent> {
         self.placeholder = placeholder
         self._text = text
         self.scrollContent = scrollContent
         self.footer = footer
         self.footerBackground = footerBackground
-        self.scrollViewCustomizer = { AnyView($0) }
+        self.scrollViewCustomizer = { $0 }
     }
     
     public var body: some View {
