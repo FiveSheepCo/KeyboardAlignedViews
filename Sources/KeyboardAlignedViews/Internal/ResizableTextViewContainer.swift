@@ -184,12 +184,18 @@ struct ResizableTextViewContainer<
                 
                 // Scroll up when the keyboard shows
                 let keyboardStartY = min(lastRecordedKeyboardMinY, startFrame.minY, scrollViewMaxY)
-                let change = keyboardStartY - endFrame.minY
+                let overflowChange = keyboardStartY - endFrame.minY
+                
+                // The space that is not filled with content
+                let unfilledSpace = max(0, scrollView.visibleSize.height - scrollView.contentSize.height - scrollView.adjustedContentInset.vertical)
+                let change = max(0, overflowChange - unfilledSpace)
+                
+                // Set the lastRecordedKeyboardMinY
                 lastRecordedKeyboardMinY = endFrame.minY
                 
                 if change > 0 && duration > 0 {
                     // When we are at the very bottom, we have to temporarily push content up (maybe SwiftUI interop problems?)
-                    model.scrollPushUpAdjustment = change
+                    model.scrollPushUpAdjustment = overflowChange
                     
                     UIView.animate(
                         withDuration: duration, delay: 0,
