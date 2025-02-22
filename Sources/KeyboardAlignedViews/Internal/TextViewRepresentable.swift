@@ -39,7 +39,7 @@ struct TextViewRepresentable: UIViewRepresentable {
         context.coordinator.adjustHeight(of: uiView)
         
         // Adjust editing state
-        if isEditing != uiView.isFirstResponder {
+        if !context.coordinator.justEndedEditing && isEditing != uiView.isFirstResponder {
             if isEditing {
                 uiView.becomeFirstResponder()
             } else {
@@ -55,6 +55,7 @@ struct TextViewRepresentable: UIViewRepresentable {
     class Coordinator: NSObject, UITextViewDelegate {
         var parent: TextViewRepresentable
         private var heightConstraint: NSLayoutConstraint?
+        private(set) var justEndedEditing: Bool = false
         
         init(_ parent: TextViewRepresentable) {
             self.parent = parent
@@ -99,8 +100,11 @@ struct TextViewRepresentable: UIViewRepresentable {
         }
         
         func textViewDidEndEditing(_ textView: UITextView) {
+            justEndedEditing = true
+            
             Task {
                 parent.isEditing = false
+                justEndedEditing = false
             }
         }
     }
