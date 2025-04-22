@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct TextViewRepresentable: UIViewRepresentable {
+    @Environment(\.font) var font
+    
     enum Constants {
         static let maxHeight: CGFloat = 200
     }
@@ -15,7 +17,6 @@ struct TextViewRepresentable: UIViewRepresentable {
         
         // TextView properties
         textView.isScrollEnabled = false
-        textView.font = UIFont.preferredFont(forTextStyle: .body)
         textView.backgroundColor = .clear
         textView.delegate = context.coordinator
         
@@ -32,6 +33,22 @@ struct TextViewRepresentable: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: UITextView, context: Context) {
+        let font = switch self.font {
+            case .body: UIFont.preferredFont(forTextStyle: .body)
+            case .callout: UIFont.preferredFont(forTextStyle: .callout)
+            case .caption: UIFont.preferredFont(forTextStyle: .caption1)
+            case .caption2: UIFont.preferredFont(forTextStyle: .caption2)
+            case .footnote: UIFont.preferredFont(forTextStyle: .footnote)
+            case .headline: UIFont.preferredFont(forTextStyle: .headline)
+            case .largeTitle: UIFont.preferredFont(forTextStyle: .largeTitle)
+            case .subheadline: UIFont.preferredFont(forTextStyle: .subheadline)
+            case .title: UIFont.preferredFont(forTextStyle: .title1)
+            case .title2: UIFont.preferredFont(forTextStyle: .title1)
+            case .title3: UIFont.preferredFont(forTextStyle: .title3)
+            default: UIFont.preferredFont(forTextStyle: .body)
+        }
+        uiView.font = font
+        
         uiView.text = text
         uiView.inputAccessoryView = inputAccessoryView
         
@@ -62,6 +79,8 @@ struct TextViewRepresentable: UIViewRepresentable {
         }
         
         func adjustHeight(of textView: UITextView) {
+            textView.layoutIfNeeded()
+            
             // Calculate the required height for the content
             let fittingSize = textView.sizeThatFits(
                 CGSize(
