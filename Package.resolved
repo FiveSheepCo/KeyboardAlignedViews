@@ -7,7 +7,7 @@
       "location" : "https://github.com/FiveSheepCo/FiveKit",
       "state" : {
         "branch" : "main",
-        "revision" : "dfd5e12c4d5a846dd1aaef136781e832473576c8"
+        "revision" : "d4cc3117ca74e44773ac302d1d64ece461d36a1e"
       }
     },
     {
@@ -16,7 +16,7 @@
       "location" : "https://github.com/FiveSheepCo/FoundationPlus.git",
       "state" : {
         "branch" : "main",
-        "revision" : "cceb337b90130898a083a8da375df6ae0e2b7ac4"
+        "revision" : "de444821f18df6d8e182a702f715c84bafb2130c"
       }
     },
     {
@@ -25,7 +25,7 @@
       "location" : "https://github.com/FiveSheepCo/SwiftUIElements.git",
       "state" : {
         "branch" : "main",
-        "revision" : "d6e30adbc34a133c98cc2156f29b938ff2acbf58"
+        "revision" : "867f5c4a0a373a8b94e2061c99706bafaa970f5d"
       }
     }
   ],
