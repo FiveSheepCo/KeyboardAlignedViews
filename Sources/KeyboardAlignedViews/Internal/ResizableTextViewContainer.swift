@@ -72,7 +72,12 @@ struct ResizableTextViewContainer<
         viewController.view.addSubview(backgroundHostingController.view)
         let backgroundView = backgroundHostingController.view!
         backgroundView.backgroundColor = .clear
-        
+
+        if #available(iOS 26, macOS 26, *) {
+            backgroundView.cornerConfiguration = .uniformCorners(radius: .containerConcentric())
+            backgroundView.layer.masksToBounds = true
+        }
+
         // Bottom Hosting Controller
         var bottomLayoutConstraint: NSLayoutConstraint!
         let bottomHostingController = UIHostingController(
@@ -94,12 +99,9 @@ struct ResizableTextViewContainer<
         bottomLayoutConstraint = bottomView.heightAnchor.constraint(equalToConstant: 20)
         bottomLayoutConstraint.isActive = true
         bottomView.translatesAutoresizingMaskIntoConstraints = false
-        if #available(iOS 26, macOS 26, *) {
-            bottomView.cornerConfiguration = .uniformCorners(radius: .containerConcentric())
-        }
         viewController.view.addSubview(bottomView)
         bottomView.backgroundColor = .clear
-        
+
         let guide = viewController.view.keyboardLayoutGuide
         
         let bottomConstraint = bottomView.bottomAnchor.constraint(lessThanOrEqualTo: guide.topAnchor)
@@ -112,7 +114,7 @@ struct ResizableTextViewContainer<
         context.coordinator.bottomLayoutConstraint = bottomLayoutConstraint
         context.coordinator.scrollViewContainer = scrollHostingController
         context.coordinator.guide = guide
-        
+
         // Activate constraints
         NSLayoutConstraint.activate([
             // Scroll View Constraints
@@ -134,7 +136,7 @@ struct ResizableTextViewContainer<
             // Accessory View Constraints
             accessoryView.heightAnchor.constraint(equalToConstant: 0)
         ])
-        
+
         return viewController
     }
 
@@ -239,4 +241,18 @@ struct ResizableTextViewContainer<
             }
         }
     }
+}
+
+#Preview {
+    KAScrollViewWithTextViewFooter(
+        placeholder: "",
+        text: .constant(""),
+        scrollContent: {},
+        footer: { textView in
+            textView
+        },
+        footerBackground: {
+            Color.red
+        }
+    )
 }

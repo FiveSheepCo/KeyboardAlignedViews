@@ -96,3 +96,18 @@ public struct KAScrollViewWithTextViewFooter<
         .ignoresSafeArea()
     }
 }
+
+#Preview {
+    KAScrollViewWithTextViewFooter(
+        placeholder: "",
+        text: .constant(""),
+        scrollContent: {},
+        footer: { textView in
+            textView
+        },
+        footerBackground: {
+            Color.red
+                .padding(8)
+        }
+    )
+}
