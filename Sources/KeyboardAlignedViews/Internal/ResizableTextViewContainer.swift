@@ -94,6 +94,9 @@ struct ResizableTextViewContainer<
         bottomLayoutConstraint = bottomView.heightAnchor.constraint(equalToConstant: 20)
         bottomLayoutConstraint.isActive = true
         bottomView.translatesAutoresizingMaskIntoConstraints = false
+        if #available(iOS 26, macOS 26, *) {
+            bottomView.cornerConfiguration = .uniformCorners(radius: .containerConcentric())
+        }
         viewController.view.addSubview(bottomView)
         bottomView.backgroundColor = .clear
         
